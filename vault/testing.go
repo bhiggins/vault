@@ -992,7 +992,6 @@ func NewTestCluster(t testing.T, base *CoreConfig, opts *TestClusterOptions) *Te
 			RootCAs:        testCluster.RootCAs,
 			ClientCAs:      testCluster.RootCAs,
 			ClientAuth:     tls.VerifyClientCertIfGiven,
-			NextProtos:     []string{"h2", "http/1.1"},
 			GetCertificate: certGetter.GetCertificate,
 		}
 		tlsConfig.BuildNameToCertificate()
@@ -1251,7 +1250,7 @@ func NewTestCluster(t testing.T, base *CoreConfig, opts *TestClusterOptions) *Te
 
 	getAPIClient := func(port int, tlsConfig *tls.Config) *api.Client {
 		transport := cleanhttp.DefaultPooledTransport()
-		transport.TLSClientConfig = tlsConfig
+		transport.TLSClientConfig = tlsConfig.Clone()
 		if err := http2.ConfigureTransport(transport); err != nil {
 			t.Fatal(err)
 		}
